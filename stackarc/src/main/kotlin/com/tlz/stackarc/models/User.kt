@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank
 import java.time.LocalDateTime
 
 @Entity
+@Table(name = "`user`")
 class User(
 
     @Id

@@ -1,7 +1,11 @@
+package com.tlz.stackarc.security
+
+import com.tlz.stackarc.config.JwtConfig
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import javax.crypto.SecretKey
@@ -11,9 +15,15 @@ import java.util.*
 
 @Component
 class JwtUtils(
-    @Value("\${jwt.secret}")
-    private val secretJwtString: String
+    private val jwtConfig: JwtConfig
 ) {
+
+    init {
+        println("🛠 JwtUtils constructed — jwtConfig.secret = ${jwtConfig.secret}")
+    }
+
+    @Value("\${jwt.secret}")
+    private lateinit var secretJwtString: String
 
     private lateinit var _key: SecretKey
 
@@ -25,7 +35,8 @@ class JwtUtils(
 
     @PostConstruct
     fun init() {
-        val keyBytes = secretJwtString.toByteArray(StandardCharsets.UTF_8)
+        println("✅ JWT CONFIG SECRET: ${jwtConfig.secret}") // Debug print
+        val keyBytes = jwtConfig.secret.toByteArray(StandardCharsets.UTF_8)
         _key = SecretKeySpec(keyBytes, "HmacSHA256")
     }
 

@@ -13,5 +13,8 @@ data class RegisterRequest(
     @field:NotBlank(message = "Password is required")
     val password: String,
 
+    @field:NotBlank(message = "Phone number is required")
+    val phoneNumber: String,
+
     val role: com.tlz.stackarc.enums.UserRole
 )

@@ -9,6 +9,6 @@ data class UserDto(
     val email: String,
     val phoneNumber: String,
     val role: com.tlz.stackarc.enums.UserRole,
-    val transaction: List<com.tlz.stackarc.dtos.TransactionDto>,
+    val transactions: List<com.tlz.stackarc.dtos.TransactionDto>? = null,
     val createdAt: LocalDateTime
 )

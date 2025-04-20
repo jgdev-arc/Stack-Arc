@@ -34,6 +34,7 @@ class SecurityConfig(
         http
             .csrf { it.disable() }
             .cors { it.disable() }
+            .headers { it.frameOptions { frameOptions -> frameOptions.disable() } }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .exceptionHandling {
                 it.accessDeniedHandler(accessDeniedHandler)
@@ -43,6 +44,7 @@ class SecurityConfig(
                 it
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/api/public/**").permitAll()
+                    .requestMatchers("/h2-console/**").permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter::class.java)
