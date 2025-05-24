@@ -1,5 +1,8 @@
+package com.tlz.stackarc.repositories
+
 import org.springframework.data.jpa.repository.JpaRepository
 import com.tlz.stackarc.models.Product
+
 
 interface ProductRepository : JpaRepository<com.tlz.stackarc.models.Product, Long> {
     fun findByNameContainingOrDescriptionContaining(

@@ -1,3 +1,5 @@
+package com.tlz.stackarc.repositories
+
 import org.springframework.data.jpa.repository.JpaRepository
 import com.tlz.stackarc.models.Product
 import com.tlz.stackarc.models.Supplier

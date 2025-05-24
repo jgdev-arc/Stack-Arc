@@ -38,7 +38,12 @@ class Product(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    var category: com.tlz.stackarc.models.Category? = null
+    var category: com.tlz.stackarc.models.Category? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id")
+    var supplier: Supplier? = null
+
 
 ) {
     override fun toString(): String {
