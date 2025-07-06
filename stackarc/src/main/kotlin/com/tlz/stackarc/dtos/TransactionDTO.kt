@@ -18,4 +18,5 @@ data class TransactionDto(
     val product: Long?,
     val user: Long?,
     val supplier: Long?
+
 )
