@@ -14,14 +14,14 @@ class CategoryController(
     private val categoryService: CategoryService
 ) {
 
-    @PostMapping("/add")
+    @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     fun createCategory(@RequestBody @Valid categoryDto: CategoryDto): ResponseEntity<Response> {
         val response = categoryService.createCategory(categoryDto)
         return ResponseEntity.status(response.status).body(response)
     }
 
-    @GetMapping("/all")
+    @GetMapping
     fun getAllCategories(): ResponseEntity<Response> {
         val response = categoryService.getAllCategories()
         return ResponseEntity.status(response.status).body(response)

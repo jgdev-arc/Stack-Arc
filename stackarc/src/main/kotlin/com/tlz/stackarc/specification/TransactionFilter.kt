@@ -20,7 +20,6 @@ class TransactionFilter {
             val predicates = mutableListOf<Predicate>()
 
             predicates += cb.like(cb.lower(root.get("description")), searchPattern)
-            predicates += cb.like(cb.lower(root.get("note")), searchPattern)
 
             val statusPath = root.get<Enum<TransactionStatus>>("status").`as`(String::class.java)
             predicates += cb.like(cb.lower(statusPath), searchPattern)

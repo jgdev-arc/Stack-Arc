@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param
 
 interface TransactionRepository : JpaRepository<Transaction, Long> {
 
-    fun findByDescriptionContainingOrNoteContaining(description: String, note: String): List<Transaction>
+    fun findByDescriptionContaining(description: String): List<Transaction>
 
     @Query("SELECT t FROM Transaction t WHERE MONTH(t.createdAt) = :month AND YEAR(t.createdAt) = :year")
     fun findAllByMonthAndYear(@Param("month") month: Int, @Param("year") year: Int): List<Transaction>

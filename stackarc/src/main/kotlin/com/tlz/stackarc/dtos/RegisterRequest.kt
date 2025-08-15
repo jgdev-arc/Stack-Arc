@@ -16,5 +16,5 @@ data class RegisterRequest(
     @field:NotBlank(message = "Phone number is required")
     val phoneNumber: String,
 
-    val role: com.tlz.stackarc.enums.UserRole
+    val role: String? = null
 )

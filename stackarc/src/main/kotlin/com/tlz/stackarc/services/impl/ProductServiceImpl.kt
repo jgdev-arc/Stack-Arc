@@ -38,7 +38,8 @@ class ProductServiceImpl(
             price = price,
             stockQuantity = stockQuantity,
             description = description,
-            imageUrl = imageFile?.originalFilename ?: "",
+            imageUrl = imageFile?.originalFilename?.let { "/test-images/$it" }
+                ?: "/test-images/default-product.jpg",
             category = category,
             createdAt = LocalDateTime.now()
         )
@@ -72,7 +73,8 @@ class ProductServiceImpl(
         existingProduct.price = price
         existingProduct.stockQuantity = stockQuantity
         existingProduct.description = description
-        existingProduct.imageUrl = imageFile?.originalFilename ?: existingProduct.imageUrl
+        existingProduct.imageUrl = imageFile?.originalFilename?.let { "/test-images/$it" }
+            ?: existingProduct.imageUrl
         existingProduct.category = category
 
         productRepository.save(existingProduct)
@@ -82,6 +84,7 @@ class ProductServiceImpl(
             message = "Product updated successfully"
         )
     }
+
 
     override fun getAllProducts(): Response {
         val products = productRepository.findAll().map { it.toDto() }
@@ -134,7 +137,7 @@ class ProductServiceImpl(
     }
 
 
-    // === Mapping Extension ===
+    // Mapping Extension
     private fun Product.toDto(): ProductDto = ProductDto(
         id = this.id,
         name = this.name,
@@ -143,7 +146,7 @@ class ProductServiceImpl(
         stockQuantity = this.stockQuantity,
         description = this.description,
         expiryDate = this.expiryDate,
-        imageUrl = this.imageUrl,
+        imageUrl = if (!this.imageUrl.isNullOrBlank()) this.imageUrl else "/test-images/default-product.jpg",
         createdAt = this.createdAt,
         categoryId = this.category?.id ?: 0L,
         supplierId = this.supplier?.id ?: 0L,

@@ -14,14 +14,14 @@ class SupplierController(
     private val supplierService: SupplierService
 ) {
 
-    @PostMapping("/add")
+    @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     fun addSupplier(@RequestBody @Valid supplierDto: SupplierDto): ResponseEntity<Response> {
         val response = supplierService.addSupplier(supplierDto)
         return ResponseEntity.status(response.status).body(response)
     }
 
-    @GetMapping("/all")
+    @GetMapping
     fun getAllSuppliers(): ResponseEntity<Response> {
         val response = supplierService.getAllSuppliers()
         return ResponseEntity.status(response.status).body(response)
@@ -33,7 +33,7 @@ class SupplierController(
         return ResponseEntity.status(response.status).body(response)
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     fun updateSupplier(
         @PathVariable id: Long,
@@ -43,7 +43,7 @@ class SupplierController(
         return ResponseEntity.status(response.status).body(response)
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     fun deleteSupplier(@PathVariable id: Long): ResponseEntity<Response> {
         val response = supplierService.deleteSupplier(id)

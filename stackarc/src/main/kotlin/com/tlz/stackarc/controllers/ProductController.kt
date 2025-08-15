@@ -1,6 +1,5 @@
 package com.tlz.stackarc.controllers
 
-import com.tlz.stackarc.dtos.ProductDto
 import com.tlz.stackarc.dtos.Response
 import com.tlz.stackarc.services.ProductService
 import jakarta.validation.Valid
@@ -16,7 +15,7 @@ class ProductController(
     private val productService: ProductService
 ) {
 
-    @PostMapping("/add", consumes = ["multipart/form-data"])
+    @PostMapping(consumes = ["multipart/form-data"])
     @PreAuthorize("hasAuthority('ADMIN')")
     fun addProduct(
         @RequestParam name: String,
@@ -39,8 +38,7 @@ class ProductController(
         return ResponseEntity.status(response.status).body(response)
     }
 
-
-    @PostMapping("/update/{id}", consumes = ["multipart/form-data"])
+    @PutMapping("/{id}", consumes = ["multipart/form-data"])
     @PreAuthorize("hasAuthority('ADMIN')")
     fun updateProduct(
         @PathVariable id: Long,
@@ -58,8 +56,7 @@ class ProductController(
         return ResponseEntity.status(response.status).body(response)
     }
 
-
-    @GetMapping("/all")
+    @GetMapping
     fun getAllProducts(): ResponseEntity<Response> {
         val response = productService.getAllProducts()
         return ResponseEntity.status(response.status).body(response)
@@ -71,7 +68,7 @@ class ProductController(
         return ResponseEntity.status(response.status).body(response)
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     fun deleteProduct(@PathVariable id: Long): ResponseEntity<Response> {
         val response = productService.deleteProduct(id)
@@ -83,5 +80,4 @@ class ProductController(
         val response = productService.searchProducts(input)
         return ResponseEntity.status(response.status).body(response)
     }
-
 }

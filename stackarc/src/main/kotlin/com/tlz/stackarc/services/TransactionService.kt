@@ -1,15 +1,12 @@
 package com.tlz.stackarc.services
 
-import com.tlz.stackarc.dtos.Response
-import com.tlz.stackarc.dtos.TransactionDto
-
-import com.tlz.stackarc.dtos.TransactionRequest
+import com.tlz.stackarc.dtos.*
 
 interface TransactionService {
 
     fun addTransaction(transactionDto: TransactionDto): Response
 
-    fun getAllTransactions(): Response
+    fun getAllTransactions(trim: String): Response
 
     fun getTransactionById(id: Long): Response
 
@@ -19,11 +16,11 @@ interface TransactionService {
 
     fun searchTransactions(input: String): Response
 
-    fun purchase(request: TransactionRequest): Response
+    fun purchase(request: PurchaseRequest): Response
 
-    fun sell(request: TransactionRequest): Response
+    fun sell(request: SellRequest): Response
 
-    fun returnToSupplier(request: TransactionRequest): Response
+    fun returnToSupplier(request: ReturnToSupplierRequest): Response
 
     fun getAllTransactionByMonthAndYear(month: Int, year: Int): Response
 }

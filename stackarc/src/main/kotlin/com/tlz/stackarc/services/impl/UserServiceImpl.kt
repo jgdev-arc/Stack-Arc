@@ -22,14 +22,21 @@ class UserServiceImpl(
 ) : UserService {
 
     override fun registerUser(registerRequest: RegisterRequest): Response {
-        val role = registerRequest.role ?: UserRole.MANAGER
+        val allowedRoles = listOf("ADMIN", "MANAGER", "USER")
+
+        val roleStr = registerRequest.role?.uppercase()
+        val role = if (roleStr != null && roleStr in allowedRoles) {
+            UserRole.valueOf(roleStr)
+        } else {
+            UserRole.USER
+        }
 
         val userToSave = User(
             name = registerRequest.name,
             email = registerRequest.email,
             password = passwordEncoder.encode(registerRequest.password),
             role = role,
-            phoneNumber = "N/A", // adjust if needed
+            phoneNumber = registerRequest.phoneNumber,
             createdAt = LocalDateTime.now()
         )
 
@@ -40,6 +47,7 @@ class UserServiceImpl(
             message = "Registration Successful!"
         )
     }
+
 
     override fun loginUser(loginRequest: LoginRequest): Response {
         val user = userRepository.findByEmail(loginRequest.email)
@@ -177,12 +185,11 @@ class UserServiceImpl(
         type = this.type,
         status = this.status,
         description = this.description,
-        note = this.note,
         updatedAt = this.updatedAt,
         createdAt = this.createdAt,
-        product = this.product?.id,
-        user = this.user?.id,
-        supplier = this.supplier?.id
+        productId = this.product?.id,
+        userId = this.user?.id,
+        supplierId = this.supplier?.id
     )
 
 }

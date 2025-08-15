@@ -28,8 +28,6 @@ class Transaction(
 
     var description: String = "",
 
-    var note: String = "",
-
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime = LocalDateTime.now(),
 
@@ -56,7 +54,6 @@ class Transaction(
                 "type=$type, " +
                 "status=$status, " +
                 "description='$description', " +
-                "note='$note', " +
                 "updatedAt=$updatedAt, " +
                 "createdAt=$createdAt)"
     }
