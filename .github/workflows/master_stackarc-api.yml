@@ -1,11 +1,9 @@
-
-
 name: Build and deploy JAR app to Azure Web App - stackarc-api-cjhwakfebnd6bqab
 
 on:
   push:
     branches:
-      - master        
+      - master         
   workflow_dispatch:
 
 jobs:
@@ -24,15 +22,21 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build with Maven (backend folder)
+      - name: Build with Maven (repo root)
         run: mvn -B -DskipTests clean package
-        working-directory: backend      # <-- important: where pom.xml is
+
+      
+      - name: List build outputs
+        run: |
+          pwd
+          ls -la
+          ls -la target || true
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: backend/target/*.jar    
+          path: target/*.jar   
 
   deploy:
     runs-on: ubuntu-latest
@@ -57,6 +61,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'stackarc-api-cjhwakfebnd6bqab'  # <-- exact App Service name
+          app-name: 'stackarc-api-cjhwakfebnd6bqab'  # exact App Service name
           slot-name: 'Production'
           package: '*.jar'
