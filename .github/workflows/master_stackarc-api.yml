@@ -22,8 +22,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build with Maven (repo root)
-        run: mvn -B -DskipTests clean package
+      - name: Build with Maven
+        run: mvn clean install
+        working-directory: ./backend
 
       
       - name: List build outputs
@@ -59,8 +60,11 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_06251A6175C64CBAB43EC3517F304AD0 }}
 
       - name: Deploy to Azure Web App
+        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'stackarc-api-cjhwakfebnd6bqab'  # exact App Service name
+          app-name: 'stackarc-api'
           slot-name: 'Production'
-          package: '*.jar'
+          package: backend/target/*.jar
+
+
