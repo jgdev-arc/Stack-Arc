@@ -21,27 +21,51 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Detect build tool (Maven vs Gradle)
-        id: detect
+      - name: Locate project directory and build tool
+        id: locate
         shell: bash
         run: |
           set -e
-          if [ -f "pom.xml" ]; then
+          echo "Repo root: $(pwd)"
+          echo "Listing files at root:"
+          ls -la
+          echo "Searching for build files…"
+
+          # Prefer root if present
+          if [[ -f "pom.xml" ]]; then
+            echo "PROJECT_DIR=." >> $GITHUB_ENV
             echo "BUILD_TOOL=maven" >> $GITHUB_ENV
-            echo "Detected Maven"
-          elif [ -f "build.gradle" ] || [ -f "build.gradle.kts" ]; then
+            echo "Found pom.xml at repo root"
+            exit 0
+          fi
+          if [[ -f "build.gradle" || -f "build.gradle.kts" ]]; then
+            echo "PROJECT_DIR=." >> $GITHUB_ENV
             echo "BUILD_TOOL=gradle" >> $GITHUB_ENV
-            echo "Detected Gradle"
-          else
-            echo "❌ Neither pom.xml nor build.gradle(.kts) found at repo root."
-            echo "Make sure your backend project with its build file is at the repository root."
+            echo "Found Gradle build at repo root"
+            exit 0
+          fi
+
+          # Otherwise, find first matching build file anywhere in repo
+          CANDIDATE_DIR="$(git ls-files | grep -E '(pom\.xml|build\.gradle(\.kts)?)$' | head -n1 | xargs -r dirname)"
+          if [[ -z "$CANDIDATE_DIR" ]]; then
+            echo "❌ Neither pom.xml nor build.gradle(.kts) found anywhere in the repo."
             exit 1
+          fi
+
+          echo "PROJECT_DIR=$CANDIDATE_DIR" >> $GITHUB_ENV
+          if [[ -f "$CANDIDATE_DIR/pom.xml" ]]; then
+            echo "BUILD_TOOL=maven" >> $GITHUB_ENV
+            echo "Detected Maven project at: $CANDIDATE_DIR"
+          else
+            echo "BUILD_TOOL=gradle" >> $GITHUB_ENV
+            echo "Detected Gradle project at: $CANDIDATE_DIR"
           fi
 
       # --- Maven path ---
       - name: Build with Maven
         if: env.BUILD_TOOL == 'maven'
         run: mvn -B -DskipTests clean package
+        working-directory: ${{ env.PROJECT_DIR }}
 
       # --- Gradle path ---
       - name: Prepare Gradle (cache)
@@ -54,27 +78,35 @@ jobs:
           if [ -f "./gradlew" ]; then
             chmod +x ./gradlew
           else
-            echo "❌ Gradle wrapper (./gradlew) not found. Please add the wrapper to your repo."
-            echo "Run locally: gradle wrapper"
+            echo "❌ Gradle wrapper (./gradlew) not found in $PWD. Please commit it (run 'gradle wrapper' locally)."
             exit 1
           fi
+        working-directory: ${{ env.PROJECT_DIR }}
 
       - name: Build with Gradle
         if: env.BUILD_TOOL == 'gradle'
         run: ./gradlew build -x test
+        working-directory: ${{ env.PROJECT_DIR }}
 
       - name: Locate built JAR
         id: jar
+        shell: bash
         run: |
           set -e
-          JAR_PATH="$(ls -1 target/*.jar 2>/dev/null || true)"
-          if [ -z "$JAR_PATH" ]; then
-            JAR_PATH="$(ls -1 build/libs/*.jar 2>/dev/null || true)"
-          fi
-          if [ -z "$JAR_PATH" ]; then
-            echo "❌ Could not find JAR in target/ or build/libs/. Failing."
+          echo "PROJECT_DIR=${PROJECT_DIR}"
+          echo "Listing target/build dirs for debugging:"
+          ls -la "${PROJECT_DIR}/target" 2>/dev/null || true
+          ls -la "${PROJECT_DIR}/build/libs" 2>/dev/null || true
+
+          if compgen -G "${PROJECT_DIR}/target/*.jar" > /dev/null; then
+            JAR_PATH=$(ls -1 "${PROJECT_DIR}/target/"*.jar | head -n1)
+          elif compgen -G "${PROJECT_DIR}/build/libs/*.jar" > /dev/null; then
+            JAR_PATH=$(ls -1 "${PROJECT_DIR}/build/libs/"*.jar | head -n1)
+          else
+            echo "❌ Could not find JAR in ${PROJECT_DIR}/target or ${PROJECT_DIR}/build/libs."
             exit 1
           fi
+
           echo "Found JAR: $JAR_PATH"
           echo "JAR_PATH=$JAR_PATH" >> $GITHUB_ENV
 
