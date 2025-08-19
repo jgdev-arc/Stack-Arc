@@ -24,6 +24,7 @@ jobs:
 
       - name: Build with Maven (repo root)
         run: mvn -B -DskipTests clean package
+        working-directory: ${{ github.workspace }}
 
       - name: List build outputs (debug)
         run: |
@@ -35,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: target/*.jar
+          path: ${{ github.workspace }}/target/*.jar
 
   deploy:
     runs-on: ubuntu-latest
@@ -63,3 +64,4 @@ jobs:
           app-name: 'stackarc-api-cjhwakfebnd6bqab'   # exact App Service name
           slot-name: 'Production'
           package: '*.jar'
+
