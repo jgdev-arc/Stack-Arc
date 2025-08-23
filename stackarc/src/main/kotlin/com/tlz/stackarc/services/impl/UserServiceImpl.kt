@@ -21,32 +21,26 @@ class UserServiceImpl(
     private val jwtUtils: JwtUtils
 ) : UserService {
 
-    override fun registerUser(registerRequest: RegisterRequest): Response {
-        val allowedRoles = listOf("ADMIN", "MANAGER", "USER")
 
-        val roleStr = registerRequest.role?.uppercase()
-        val role = if (roleStr != null && roleStr in allowedRoles) {
-            UserRole.valueOf(roleStr)
-        } else {
-            UserRole.USER
+    override fun registerUser(registerRequest: RegisterRequest): Response {
+        if (userRepository.findByEmail(registerRequest.email).isPresent) {
+            return Response(status = 409, message = "Email already in use.")
         }
 
         val userToSave = User(
             name = registerRequest.name,
             email = registerRequest.email,
             password = passwordEncoder.encode(registerRequest.password),
-            role = role,
             phoneNumber = registerRequest.phoneNumber,
+            role = UserRole.USER,
             createdAt = LocalDateTime.now()
         )
 
         userRepository.save(userToSave)
 
-        return Response(
-            status = 200,
-            message = "Registration Successful!"
-        )
+        return Response(status = 201, message = "Registration successful!")
     }
+
 
 
     override fun loginUser(loginRequest: LoginRequest): Response {
@@ -122,22 +116,22 @@ class UserServiceImpl(
     }
 
 
+
     override fun updateUser(id: Long, userDto: UserDto): Response {
         val existingUser = userRepository.findById(id)
             .orElseThrow { NotFoundException("User Not Found") }
 
+
         userDto.email?.let { existingUser.email = it }
         userDto.phoneNumber?.let { existingUser.phoneNumber = it }
         userDto.name?.let { existingUser.name = it }
-        userDto.role?.let { existingUser.role = it }
+
 
         userRepository.save(existingUser)
 
-        return Response(
-            status = 200,
-            message = "User successfully updated"
-        )
+        return Response(status = 200, message = "User successfully updated")
     }
+
 
     override fun deleteUser(id: Long): Response {
         userRepository.findById(id)
@@ -165,6 +159,23 @@ class UserServiceImpl(
     }
 
 
+    override fun updateUserRole(userId: Long, newRole: UserRole): Response {
+        val user = userRepository.findById(userId)
+            .orElseThrow { NotFoundException("User Not Found") }
+
+
+        if (user.role == UserRole.ADMIN && newRole != UserRole.ADMIN) {
+            val adminCount = userRepository.countByRole(UserRole.ADMIN)
+            require(adminCount > 1) { "Cannot remove the last remaining admin." }
+        }
+
+        user.role = newRole
+        userRepository.save(user)
+        return Response(status = 200, message = "Role updated to $newRole")
+    }
+
+
+
     // === Mapping Extensions ===
 
     private fun User.toDto(): UserDto = UserDto(
@@ -174,7 +185,7 @@ class UserServiceImpl(
         phoneNumber = this.phoneNumber,
         role = this.role,
         createdAt = this.createdAt,
-        transactions = null // or an empty list if preferred
+        transactions = null
     )
 
 

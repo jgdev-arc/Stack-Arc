@@ -15,6 +15,4 @@ data class RegisterRequest(
 
     @field:NotBlank(message = "Phone number is required")
     val phoneNumber: String,
-
-    val role: String? = null
 )

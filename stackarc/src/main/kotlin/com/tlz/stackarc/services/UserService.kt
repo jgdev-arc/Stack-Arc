@@ -1,6 +1,7 @@
 package com.tlz.stackarc.services
 
 import com.tlz.stackarc.dtos.*
+import com.tlz.stackarc.enums.UserRole
 import org.springframework.stereotype.Service
 
 @Service
@@ -23,4 +24,7 @@ interface UserService {
     fun getUserTransactions(id: Long): Response
 
     fun changePassword(request: ChangePasswordRequest): Response
+
+    fun updateUserRole(userId: Long, newRole: UserRole): Response
+
 }
