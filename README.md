@@ -1,6 +1,6 @@
 # <div align="center">🧱 **Stack Arc – Backend (Kotlin + Spring Boot)** 🧱</div>
 
-A clean, production-ready REST API for inventory management. Built with **Kotlin + Spring Boot**, ships JWT auth, role-based access control, DTOs, and modular services. Deployed on **Azure App Service**, developed locally with **H2**, and ready for **MySQL** in prod.
+A clean, production-ready REST API for inventory management. Built with **Kotlin + Spring Boot**, ships JWT auth, role-based access control, DTOs, and modular services. Deployed on **Azure App Service** and developed locally with **H2**. View the front end repository [here](https://github.com/jgdev-arc/stack-arc-frontend).
 
 ---
 
